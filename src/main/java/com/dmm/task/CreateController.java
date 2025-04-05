@@ -1,7 +1,6 @@
 package com.dmm.task;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,12 +36,12 @@ public class CreateController {
 		Tasks task = new Tasks();
 		String title = taskForm.getTitle();
 		String text = taskForm.getText();
-		String date = taskForm.getDate();
-		DateTimeFormatter formatter_bef = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-		LocalDate lDate = LocalDate.parse(date, formatter_bef);
-		DateTimeFormatter formatter_aft = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		date = formatter_aft.format(lDate);
-		date = date + " 00:00:00";
+		LocalDate date = taskForm.getDate();
+//		DateTimeFormatter formatter_bef = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+//		LocalDate lDate = LocalDate.parse(date, formatter_bef);
+//		DateTimeFormatter formatter_aft = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//		date = formatter_aft.format(lDate);
+//		date = date + " 00:00:00";
 		boolean done = false;
 		
 		task.setTitle(title);

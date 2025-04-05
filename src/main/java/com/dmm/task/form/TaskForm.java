@@ -1,5 +1,8 @@
 package com.dmm.task.form;
 
+import java.time.LocalDate;
+
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import lombok.Data;
@@ -11,7 +14,7 @@ public class TaskForm {
 	private String title;
 	@Size(min = 1, max = 200)
 	private String text;
-	@Size(min = 10, max = 10)
-	private String date;
+	@NotNull(message = "タスクの日付は必須です")
+	private LocalDate date;
 
 }
