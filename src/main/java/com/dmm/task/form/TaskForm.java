@@ -13,6 +13,5 @@ public class TaskForm {
 	private String text;
 	@Size(min = 10, max = 10)
 	private String date;
-	private boolean done;
 
 }
