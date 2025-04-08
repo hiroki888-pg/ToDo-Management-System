@@ -5,17 +5,34 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+
+import com.dmm.task.data.entity.Tasks;
+import com.dmm.task.data.repository.TasksRepository;
 
 @Controller
 public class MainCotroller {
+	
+	@Autowired
+	private TasksRepository tasksRepository;
+	
+	public Map<LocalDate, List<Tasks>> getTasksGroupedByDay() {
+        // タスクのリストを取得
+        List<Tasks> tasks = tasksRepository.findAll();
+
+        // dateフィールドを基に日付でグループ化
+        return tasks.stream()
+                .collect(Collectors.groupingBy(task -> task.getDate().toLocalDate()));
+    }
+	
 	@GetMapping("/main")
-	String main(Model model) {
-		
+	String main(Model model, Model model_task) {
 		
 		List<List<LocalDate>> monthList = new ArrayList<List<LocalDate>>();
 		List<LocalDate> weekList = new ArrayList<LocalDate>();
@@ -135,53 +152,56 @@ public class MainCotroller {
 			}
 		}
 		
+		Map<LocalDate, List<Tasks>> tasksGroupedByDay = getTasksGroupedByDay();
+		
 		model.addAttribute("month", formattedDate);
 
     	model.addAttribute("matrix", monthList);
     	
+    	model.addAttribute("tasks", tasksGroupedByDay);
 		
 		return "main";
 	}
 	
-	@GetMapping("/main/{prev}")
-	String prev(@PathVariable String prev, Model model) {
-		
-		model.addAttribute("prev", prev);
-		
-		List<List<LocalDate>> lastMonthOfMonthList = new ArrayList<List<LocalDate>>();
-		List<LocalDate> lastMonthOfweekList = new ArrayList<LocalDate>();
-		
-		LocalDate now = LocalDate.now();
-		LocalDate firstDay = now.withDayOfMonth(1);
-		LocalDate lastMonthOfFirstDay = firstDay.minusMonths(1);
-		int lastMonthOfLength = lastMonthOfFirstDay.lengthOfMonth();
-		LocalDate lastMonthOflastDay = lastMonthOfFirstDay.withDayOfMonth(lastMonthOfLength);
-		
-		int year = lastMonthOfFirstDay.getYear();
-		int month = lastMonthOfFirstDay.getMonthValue();
-		
-		LocalDate lastMonthOfnextDay = lastMonthOfFirstDay;
-		DayOfWeek lastMonthOfNextDate = lastMonthOfnextDay.getDayOfWeek();
-		
-		for(int j = 0; j< lastMonthOflastDay.getDayOfMonth(); j++) {
-			lastMonthOfnextDay = lastMonthOfFirstDay.plusDays(j);
-			lastMonthOfweekList.add(lastMonthOfnextDay);
-			lastMonthOfNextDate = lastMonthOfnextDay.getDayOfWeek();
-			if (lastMonthOfNextDate.getValue() == 6) {
-				lastMonthOfMonthList.add(lastMonthOfweekList);
-				lastMonthOfweekList = new ArrayList<>();
-			}
-		}
-		
-		model.addAttribute("year", year);
-		model.addAttribute("month", month);
-		
-		model.addAttribute("prev", lastMonthOfFirstDay);
-		
-		model.addAttribute("weekList", lastMonthOfweekList);
-    	model.addAttribute("monthList", lastMonthOfMonthList);
-		
-		return "lastOfMonth";
-	}
+//	@GetMapping("/main/{prev}")
+//	String prev(@PathVariable String prev, Model model) {
+//		
+//		model.addAttribute("prev", prev);
+//		
+//		List<List<LocalDate>> lastMonthOfMonthList = new ArrayList<List<LocalDate>>();
+//		List<LocalDate> lastMonthOfweekList = new ArrayList<LocalDate>();
+//		
+//		LocalDate now = LocalDate.now();
+//		LocalDate firstDay = now.withDayOfMonth(1);
+//		LocalDate lastMonthOfFirstDay = firstDay.minusMonths(1);
+//		int lastMonthOfLength = lastMonthOfFirstDay.lengthOfMonth();
+//		LocalDate lastMonthOflastDay = lastMonthOfFirstDay.withDayOfMonth(lastMonthOfLength);
+//		
+//		int year = lastMonthOfFirstDay.getYear();
+//		int month = lastMonthOfFirstDay.getMonthValue();
+//		
+//		LocalDate lastMonthOfnextDay = lastMonthOfFirstDay;
+//		DayOfWeek lastMonthOfNextDate = lastMonthOfnextDay.getDayOfWeek();
+//		
+//		for(int j = 0; j< lastMonthOflastDay.getDayOfMonth(); j++) {
+//			lastMonthOfnextDay = lastMonthOfFirstDay.plusDays(j);
+//			lastMonthOfweekList.add(lastMonthOfnextDay);
+//			lastMonthOfNextDate = lastMonthOfnextDay.getDayOfWeek();
+//			if (lastMonthOfNextDate.getValue() == 6) {
+//				lastMonthOfMonthList.add(lastMonthOfweekList);
+//				lastMonthOfweekList = new ArrayList<>();
+//			}
+//		}
+//		
+//		model.addAttribute("year", year);
+//		model.addAttribute("month", month);
+//		
+//		model.addAttribute("prev", lastMonthOfFirstDay);
+//		
+//		model.addAttribute("weekList", lastMonthOfweekList);
+//    	model.addAttribute("monthList", lastMonthOfMonthList);
+//		
+//		return "lastOfMonth";
+//	}
 
 }
