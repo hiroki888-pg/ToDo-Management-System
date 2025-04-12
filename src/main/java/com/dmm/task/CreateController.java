@@ -37,11 +37,6 @@ public class CreateController {
 		String text = taskForm.getText();
 		LocalDate date = taskForm.getDate();
 		LocalDateTime localDateTime = date.atStartOfDay();
-//		DateTimeFormatter formatter_bef = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-//		LocalDate lDate = LocalDate.parse(date, formatter_bef);
-//		DateTimeFormatter formatter_aft = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//		date = formatter_aft.format(lDate);
-//		date = date + " 00:00:00";
 		boolean done = false;
 		
 		task.setTitle(title);

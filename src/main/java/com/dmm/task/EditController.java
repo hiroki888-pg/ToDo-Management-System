@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,11 +25,10 @@ import com.dmm.task.service.AccountUserDetails;
 public class EditController {
 	
 	@Autowired
-	private TasksRepository tasksRepositoryOfget;
-	private TasksRepository tasksRepositoryOfset;
+	private TasksRepository tasksRepository;
 	@GetMapping("/main/edit/{id}")
 	public String edit(@PathVariable("id") Long id, Model model) {
-		Optional<Tasks> opTask = tasksRepositoryOfget.findById(id);
+		Optional<Tasks> opTask = tasksRepository.findById(id);
 		if (opTask.isEmpty()) {
 	        // Taskが存在しない場合、適切なエラーメッセージや処理を返す
 	        model.addAttribute("error", "Task not found for id: " + id);
@@ -71,10 +71,15 @@ public class EditController {
 		task.setDate(localDateTime);
 		task.setDone(done);
 		
-		tasksRepositoryOfset.save(task);
+		tasksRepository.save(task);
 		return "redirect:/main";
 	}
 	
-	
+	@PostMapping("/main/delete/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public String deleteTask(@PathVariable Long id) {
+		tasksRepository.deleteById(id);
+		return "redirect:/main";
+	}
 
 }
