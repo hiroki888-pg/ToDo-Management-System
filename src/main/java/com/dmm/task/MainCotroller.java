@@ -165,10 +165,6 @@ public class MainCotroller {
 			}
 		}
 		
-		Map<LocalDate, List<Tasks>> tasksGroupedByDay = getTasksGroupedByDay();
-		
-		Map<LocalDate, List<Tasks>> tasksGroupedByName = getTasksGroupedByName(user.getName());
-		
 		model.addAttribute("month", formattedDate);
 
     	model.addAttribute("matrix", monthList);
@@ -180,8 +176,10 @@ public class MainCotroller {
     	
     	
     	if(user.getName().equals("admin-name")) {
+    		Map<LocalDate, List<Tasks>> tasksGroupedByDay = getTasksGroupedByDay();
     		model.addAttribute("tasks", tasksGroupedByDay);
     	} else {
+    		Map<LocalDate, List<Tasks>> tasksGroupedByName = getTasksGroupedByName(user.getName());
     		model.addAttribute("tasks", tasksGroupedByName);
     	}
 		
