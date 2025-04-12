@@ -2,6 +2,7 @@ package com.dmm.task;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,17 +27,17 @@ public class MainCotroller {
 	@Autowired
 	private TasksRepository tasksRepository;
 	
-	public Map<LocalDate, List<Tasks>> getTasksGroupedByDay() {
+	public Map<LocalDate, List<Tasks>> getTasksGroupedByDay(LocalDateTime firstDay, LocalDateTime lastSaturday) {
         // タスクのリストを取得
-        List<Tasks> tasks = tasksRepository.findAll();
+		List<Tasks> tasks = tasksRepository.findByDateBetween(firstDay, lastSaturday);
 
         // dateフィールドを基に日付でグループ化
         return tasks.stream()
                 .collect(Collectors.groupingBy(task -> task.getDate().toLocalDate()));
     }
 	
-	public Map<LocalDate, List<Tasks>> getTasksGroupedByName(String name) {
-		List<Tasks> tasks = tasksRepository.findAllByName(name);
+	public Map<LocalDate, List<Tasks>> getTasksGroupedByName(LocalDateTime firstDay, LocalDateTime lastSaturday, String name) {
+		List<Tasks> tasks = tasksRepository.findByDateBetweenAndName(firstDay, lastSaturday, name);
 		
 		// dateフィールドを基に日付でグループ化
         return tasks.stream()
@@ -59,12 +60,14 @@ public class MainCotroller {
 		LocalDate firstDay = date.withDayOfMonth(1);
 		
 		LocalDate zengetsuDay = firstDay;
+		LocalDate zengetsuDayofMaster = firstDay;
 		DayOfWeek zengetsuDate = zengetsuDay.getDayOfWeek();
 		int zengetsuValue = zengetsuDate.getValue();
 		
 		int j;
 		if(zengetsuValue == 1) {
 			j = 1;
+			zengetsuDayofMaster = firstDay.minusDays(j);
 			while(j > 0) {
 				zengetsuDay = firstDay.minusDays(j);
 				weekList.add(zengetsuDay);
@@ -72,6 +75,7 @@ public class MainCotroller {
 			}
 		} else if(zengetsuValue == 2) {
 			j = 2;
+			zengetsuDayofMaster = firstDay.minusDays(j);
 			while(j > 0) {
 				zengetsuDay = firstDay.minusDays(j);
 				weekList.add(zengetsuDay);
@@ -79,6 +83,7 @@ public class MainCotroller {
 			}
 		} else if(zengetsuValue == 3) {
 			j = 3;
+			zengetsuDayofMaster = firstDay.minusDays(j);
 			while(j > 0) {
 				zengetsuDay = firstDay.minusDays(j);
 				weekList.add(zengetsuDay);
@@ -86,6 +91,7 @@ public class MainCotroller {
 			}
 		} else if(zengetsuValue == 4) {
 			j = 4;
+			zengetsuDayofMaster = firstDay.minusDays(j);
 			while(j > 0) {
 				zengetsuDay = firstDay.minusDays(j);
 				weekList.add(zengetsuDay);
@@ -93,6 +99,7 @@ public class MainCotroller {
 			}
 		} else if(zengetsuValue == 5) {
 			j = 5;
+			zengetsuDayofMaster = firstDay.minusDays(j);
 			while(j > 0) {
 				zengetsuDay = firstDay.minusDays(j);
 				weekList.add(zengetsuDay);
@@ -100,6 +107,7 @@ public class MainCotroller {
 			}
 		} else if(zengetsuValue == 6) {
 			j = 6;
+			zengetsuDayofMaster = firstDay.minusDays(j);
 			while(j > 0) {
 				zengetsuDay = firstDay.minusDays(j);
 				weekList.add(zengetsuDay);
@@ -174,12 +182,14 @@ public class MainCotroller {
     	model.addAttribute("next", neMonth);
     	
     	
+    	LocalDateTime zengetsuDateTimeofMater = zengetsuDayofMaster.atStartOfDay();
+    	LocalDateTime lastSaturdateTime = lastSaturday.atStartOfDay();
     	
     	if(user.getName().equals("admin-name")) {
-    		Map<LocalDate, List<Tasks>> tasksGroupedByDay = getTasksGroupedByDay();
+    		Map<LocalDate, List<Tasks>> tasksGroupedByDay = getTasksGroupedByDay(zengetsuDateTimeofMater, lastSaturdateTime);
     		model.addAttribute("tasks", tasksGroupedByDay);
     	} else {
-    		Map<LocalDate, List<Tasks>> tasksGroupedByName = getTasksGroupedByName(user.getName());
+    		Map<LocalDate, List<Tasks>> tasksGroupedByName = getTasksGroupedByName(zengetsuDateTimeofMater, lastSaturdateTime, user.getName());
     		model.addAttribute("tasks", tasksGroupedByName);
     	}
 		
